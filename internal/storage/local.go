@@ -1,4 +1,4 @@
-package photos_api
+package storage
 
 import (
 	"fmt"
@@ -13,8 +13,7 @@ import (
 
 type LocalStorage struct{}
 
-func (l *LocalStorage) SavePhoto(c *gin.Context) {
-	// single file
+func (s *LocalStorage) SavePhoto(c *gin.Context) {
 
 	form, _ := c.MultipartForm()
 	files := form.File["uploads"]

@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/alexflint/go-arg"
 	"github.com/gin-gonic/gin"
-	photos_api "github.com/plant_disease_detection/internal/photos_api"
+	"github.com/plant_disease_detection/internal/storage"
 )
 
 var args struct {
@@ -12,7 +12,7 @@ var args struct {
 
 func main() {
 	arg.MustParse(&args)
-	storage := photos_api.GetStorage(args.Storage)
+	storage := storage.GetStorage(args.Storage)
 
 	router := gin.Default()
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
