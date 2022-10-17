@@ -47,10 +47,13 @@ func (c *UploaderClient) UploadFile(file multipart.File, object string) error {
 }
 
 func init() {
-	os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "./google_cloud_credentials.json")
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "./google_cloud_credentials.json")
+	}
 	client, err := storage.NewClient(context.Background())
 	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
+		log.Printf("Failed to create client: %v", err)
+		return
 	}
 
 	Guploader = &UploaderClient{

@@ -1,23 +1,32 @@
 package photos_api
 
 import (
-	"github.com/alexflint/go-arg"
 	"github.com/gin-gonic/gin"
 	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/storage"
 )
 
-var args struct {
-	Storage string `arg:"-s,--storage" help:"The storage where photos are going to be stored. default: 'local'"`
+var addr string
+
+func setAddr(addrs ...string) {
+	addr = "localhost:8080"
+	if len(addrs) > 0 {
+		addr = addrs[0]
+	}
 }
 
-func Main() {
-	arg.MustParse(&args)
-	storage := storage.GetStorage(args.Storage)
+func Addr() string {
+	return addr
+}
 
+func Serve(storage_name interface{}, addrs ...string) {
 	router := gin.Default()
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
+
+	storage := storage.GetStorage(storage_name)
 	router.POST("/upload", storage.SavePhoto)
 	router.POST("/create_user", auth.CreateUser)
-	router.Run(":8080")
+
+	setAddr(addrs...)
+	router.Run(Addr())
 }

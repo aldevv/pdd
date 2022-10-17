@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/alexflint/go-arg"
 	"github.com/plant_disease_detection/internal/photos_api"
 )
 
@@ -9,5 +10,6 @@ var args struct {
 }
 
 func main() {
-	photos_api.Main()
+	arg.MustParse(&args)
+	photos_api.Serve(args.Storage, ":8080")
 }

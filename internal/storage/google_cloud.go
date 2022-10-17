@@ -12,6 +12,9 @@ import (
 type GCloudStorage struct{}
 
 func (s *GCloudStorage) SavePhoto(c *gin.Context) {
+	if credentials.Guploader == nil {
+		return
+	}
 	form, _ := c.MultipartForm()
 	files := form.File["uploads"]
 
