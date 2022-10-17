@@ -4,21 +4,22 @@ import (
 	"context"
 
 	firebase "firebase.google.com/go"
+	"firebase.google.com/go/auth"
 	"google.golang.org/api/option"
 )
 
-type authApp struct {
-	app *firebase.App
-}
-
-var AuthApp *authApp
+var FirebaseApp *firebase.App
+var AuthCl *auth.Client
 
 func init() {
 
 	opt := option.WithCredentialsFile("firebase_credentials.json")
-	app, err := firebase.NewApp(context.Background(), nil, opt)
+	FirebaseApp, err := firebase.NewApp(context.Background(), nil, opt)
 	if err != nil {
 		return
 	}
-	AuthApp = &authApp{app: app}
+	AuthCl, err = FirebaseApp.Auth(context.Background())
+	if err != nil {
+		return
+	}
 }
