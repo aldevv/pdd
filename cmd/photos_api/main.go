@@ -1,9 +1,7 @@
 package main
 
 import (
-	"github.com/alexflint/go-arg"
-	"github.com/gin-gonic/gin"
-	"github.com/plant_disease_detection/internal/storage"
+	"github.com/plant_disease_detection/internal/photos_api"
 )
 
 var args struct {
@@ -11,11 +9,5 @@ var args struct {
 }
 
 func main() {
-	arg.MustParse(&args)
-	storage := storage.GetStorage(args.Storage)
-
-	router := gin.Default()
-	router.MaxMultipartMemory = 100 << 20 // 8 MiB
-	router.POST("/upload", storage.SavePhoto)
-	router.Run(":8080")
+	photos_api.Main()
 }
