@@ -12,7 +12,7 @@ import (
 type GCloudStorage struct{}
 
 func (s *GCloudStorage) SavePhoto(c *gin.Context) {
-	if credentials.Guploader == nil {
+	if credentials.GClient == nil {
 		return
 	}
 	form, _ := c.MultipartForm()
@@ -28,7 +28,7 @@ func (s *GCloudStorage) SavePhoto(c *gin.Context) {
 			})
 			return
 		}
-		err = credentials.Guploader.UploadFile(opened_file, file.Filename)
+		err = credentials.GClient.UploadFile(opened_file, file.Filename)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),

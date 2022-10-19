@@ -26,6 +26,8 @@ func Serve(storage_name interface{}, addrs ...string) {
 	storage := storage.GetStorage(storage_name)
 	router.POST("/upload", storage.SavePhoto)
 	router.POST("/create_user", auth.CreateUser)
+	router.GET("/get_user", auth.GetUser)
+	router.GET("/get_users", auth.GetUsers)
 
 	setAddr(addrs...)
 	router.Run(Addr())

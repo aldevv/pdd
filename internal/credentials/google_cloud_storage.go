@@ -25,7 +25,7 @@ type UploaderClient struct {
 	uploadPath string
 }
 
-var Guploader *UploaderClient
+var GClient *UploaderClient
 
 // UploadFile uploads an object
 func (c *UploaderClient) UploadFile(file multipart.File, object string) error {
@@ -56,7 +56,7 @@ func init() {
 		return
 	}
 
-	Guploader = &UploaderClient{
+	GClient = &UploaderClient{
 		cl:         client,
 		bucketName: bucketName,
 		projectID:  projectID,
