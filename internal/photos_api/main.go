@@ -3,6 +3,7 @@ package photos_api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/plant_disease_detection/internal/auth"
+	"github.com/plant_disease_detection/internal/credentials"
 	"github.com/plant_disease_detection/internal/storage"
 )
 
@@ -20,6 +21,8 @@ func Addr() string {
 }
 
 func Serve(storage_name interface{}, addrs ...string) {
+	credentials.ConnectDB()
+	return
 	router := gin.Default()
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
 
