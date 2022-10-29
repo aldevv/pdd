@@ -11,6 +11,8 @@ import (
 
 var FirebaseApp *firebase.App
 var AuthCl *auth.Client
+
+// this is not going to be used per se, exchanged for mongo
 var StoreCl *firestore.Client
 
 func init() {

@@ -22,8 +22,8 @@ func Addr() string {
 
 func Serve(storage_name interface{}, addrs ...string) {
 	credentials.ConnectDB()
-	return
 	router := gin.Default()
+
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
 
 	storage := storage.GetStorage(storage_name)
