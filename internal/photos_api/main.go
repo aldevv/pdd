@@ -22,6 +22,7 @@ func Addr() string {
 
 func Serve(storage_name interface{}, addrs ...string) {
 	credentials.ConnectDB()
+
 	router := gin.Default()
 
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
@@ -29,8 +30,9 @@ func Serve(storage_name interface{}, addrs ...string) {
 	storage := storage.GetStorage(storage_name)
 	router.POST("/upload", storage.SavePhoto)
 	router.POST("/create_user", auth.CreateUser)
-	router.GET("/get_user", auth.GetUser)
-	router.GET("/get_users", auth.GetUsers)
+	// router.POST("/create_user", auth.CreateUser)
+	// router.GET("/get_user", auth.GetUser)
+	// router.GET("/get_users", auth.GetUsers)
 
 	setAddr(addrs...)
 	router.Run(Addr())

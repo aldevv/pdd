@@ -4,19 +4,21 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 type MongoClient struct {
-	client *mongo.Client
+	Client *mongo.Client
 }
 
 func (c *MongoClient) InsertUserPhoto(uid string, filename string) {
-	col := c.client.Database("photos").Collection("user_photos")
+	col := c.Client.Database("photos").Collection("user_photos")
 
 	payload := bson.M{"uid": uid, "filename": filename}
 	res, err := col.InsertOne(context.Background(), payload)
@@ -29,32 +31,34 @@ func (c *MongoClient) InsertUserPhoto(uid string, filename string) {
 
 }
 
-var MongoCl *MongoClient = &MongoClient{}
+var MongoCl *MongoClient
 
 func ConnectDB() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 
-	url_conn := "mongodb://miusuario:pass@localhost:27017/photos?authSource=admin"
+	url_conn := os.Getenv("MONGO_URL")
+	fmt.Print(url_conn)
 	defer cancel()
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(url_conn))
 	if err != nil {
 		log.Fatal(err)
 	}
-	MongoCl.client = client
+	MongoCl = &MongoClient{Client: client}
+
 	// // NOTE: needed?
-	// // defer client.Disconnect(ctx)
-	// err = client.Ping(ctx, readpref.Primary())
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	//
-	// collection := client.Database("photos").Collection("user_photos")
-	// res, err := collection.InsertOne(context.Background(), bson.M{"hello": "world"})
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-	// id := res.InsertedID
-	// fmt.Println("==========")
-	// fmt.Println(id)
+	// defer client.Disconnect(ctx)
+	err = MongoCl.Client.Ping(ctx, readpref.Primary())
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	collection := MongoCl.Client.Database("photos").Collection("user_photos")
+	res, err := collection.InsertOne(context.Background(), bson.M{"bye": "moon"})
+	if err != nil {
+		log.Fatal(err)
+	}
+	id := res.InsertedID
+	fmt.Println("==========")
+	fmt.Println(id)
 }
