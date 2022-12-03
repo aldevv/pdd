@@ -4,6 +4,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/credentials"
+	"github.com/plant_disease_detection/internal/middleware"
 	"github.com/plant_disease_detection/internal/storage"
 )
 
@@ -22,13 +23,16 @@ func Addr() string {
 
 func Serve(storage_name interface{}, addrs ...string) {
 	credentials.ConnectDB()
+	storage := storage.GetStorage(storage_name)
 
 	router := gin.Default()
+	private := router.Group("/api", middleware.Protect)
+
+	private.POST("/upload", storage.SavePhoto)
 
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
 
-	storage := storage.GetStorage(storage_name)
-	router.POST("/upload", storage.SavePhoto)
+	// router.POST("/upload", storage.SavePhoto)
 	router.POST("/create_user", auth.CreateUser)
 	// router.POST("/create_user", auth.CreateUser)
 	// router.GET("/get_user", auth.GetUser)

@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/credentials"
 )
 
@@ -43,6 +44,11 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context, filename string) error {
 
 // must receive the user ID
 func (s *GCloudStorage) SavePhoto(c *gin.Context) {
+
+	claims, _ := c.Get("user")
+	user, _ := claims.(*auth.Claims)
+	fmt.Println(user.Username)
+
 	filename := uuid.NewString()
 	s._savePhoto(c, filename)
 	credentials.MongoCl.InsertUserPhoto("16", filename)
