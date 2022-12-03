@@ -1,4 +1,4 @@
-package storage
+package photo_storage
 
 import (
 	"fmt"
@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/credentials"
+	"github.com/plant_disease_detection/internal/db"
 )
 
 type GCloudStorage struct{}
@@ -51,7 +52,7 @@ func (s *GCloudStorage) SavePhoto(c *gin.Context) {
 
 	filename := uuid.NewString()
 	s._savePhoto(c, filename)
-	credentials.MongoCl.InsertUserPhoto("16", filename)
+	db.MongoCl.InsertUserPhoto("16", filename)
 	c.JSON(http.StatusOK, gin.H{
 		"success": fmt.Sprintf("files uploaded!"),
 	})

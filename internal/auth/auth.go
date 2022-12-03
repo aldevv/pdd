@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/plant_disease_detection/internal/credentials"
+	"github.com/plant_disease_detection/internal/db"
 
 	"os"
 
@@ -57,7 +57,7 @@ func ComparePassword(hashPassword string, password string) error {
 
 func CreateUser(c *gin.Context) {
 	// return's a JWT token
-	client := credentials.MongoCl.Client
+	client := db.MongoCl.Client
 	collection := client.Database("photos").Collection("users")
 	var user User
 	if err := c.BindJSON(&user); err != nil {

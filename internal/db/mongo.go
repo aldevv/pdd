@@ -1,4 +1,4 @@
-package credentials
+package db
 
 import (
 	"context"
@@ -33,6 +33,17 @@ func (c *MongoClient) InsertUserPhoto(uid string, filename string) {
 
 var MongoCl *MongoClient
 
+func createUserIndex(db *mongo.Database, ctx context.Context) {
+	model := mongo.IndexModel{
+		Keys: bson.M{
+			"username": 1,
+		},
+		Options: options.Index().SetUnique(true),
+	}
+
+	db.Collection("users").Indexes().CreateOne(ctx, model)
+}
+
 func ConnectDB() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
@@ -49,4 +60,7 @@ func ConnectDB() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	db := MongoCl.Client.Database("photos")
+	createUserIndex(db, ctx)
 }

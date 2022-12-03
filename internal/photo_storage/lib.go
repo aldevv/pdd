@@ -1,4 +1,4 @@
-package storage
+package photo_storage
 
 import "github.com/gin-gonic/gin"
 

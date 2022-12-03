@@ -3,16 +3,17 @@ package photos_api
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/plant_disease_detection/internal/auth"
-	"github.com/plant_disease_detection/internal/credentials"
+	"github.com/plant_disease_detection/internal/db"
 	"github.com/plant_disease_detection/internal/middleware"
-	"github.com/plant_disease_detection/internal/storage"
+	"github.com/plant_disease_detection/internal/photo_storage"
 )
 
 var addr string
 
 func setAddr(addrs ...string) {
-	addr = "localhost:8080"
-	if len(addrs) > 0 {
+	if len(addrs) == 0 {
+		addr = "localhost:8080"
+	} else {
 		addr = addrs[0]
 	}
 }
@@ -22,21 +23,17 @@ func Addr() string {
 }
 
 func Serve(storage_name interface{}, addrs ...string) {
-	credentials.ConnectDB()
-	storage := storage.GetStorage(storage_name)
+	db.ConnectDB()
+	storage := photo_storage.GetStorage(storage_name)
 
 	router := gin.Default()
-	private := router.Group("/api", middleware.Protect)
-
-	private.POST("/upload", storage.SavePhoto)
-
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
 
-	// router.POST("/upload", storage.SavePhoto)
 	router.POST("/create_user", auth.CreateUser)
-	// router.POST("/create_user", auth.CreateUser)
-	// router.GET("/get_user", auth.GetUser)
-	// router.GET("/get_users", auth.GetUsers)
+
+	private := router.Group("/api", middleware.Protect)
+	private.POST("/upload", storage.SavePhoto)
+	// private.GET("/get_user", auth.GetUser)
 
 	setAddr(addrs...)
 	router.Run(Addr())
