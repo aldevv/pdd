@@ -20,13 +20,14 @@ func (s *LocalStorage) SavePhoto(c *gin.Context) {
 
 	claims, _ := c.Get("user")
 	user, _ := claims.(*auth.Claims)
-	fmt.Println(user.Username)
 
 	for _, file := range files {
 		log.Println(file.Filename)
 
-		//Upload the file to specific dst.
-		c.SaveUploadedFile(file, "./uploads/"+uuid.New().String()+filepath.Ext(file.Filename))
+		filepath := "./uploads/" + uuid.New().String() + filepath.Ext(file.Filename)
+		c.SaveUploadedFile(file, filepath)
+		SaveInDb(filepath, user.Username)
 	}
+
 	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
 }

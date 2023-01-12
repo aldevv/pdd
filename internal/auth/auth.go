@@ -18,8 +18,8 @@ import (
 
 type User struct {
 	Username string `json:"username"`
-	Email    string `json:"email"`
 	Password string `json:"password"`
+	Email    string `json:"email"`
 }
 
 // Create a struct to read the username and password from the request body
@@ -55,6 +55,24 @@ func ComparePassword(hashPassword string, password string) error {
 	return err
 }
 
+func create_jwt_token(c *gin.Context, username string) string {
+	claims := &Claims{
+		Username:         username,
+		RegisteredClaims: jwt.RegisteredClaims{},
+	}
+
+	// Declare the token with the algorithm used for signing, and the claims
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	// Create the JWT string
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		// If there is an error in creating the JWT return an internal server error
+		c.String(http.StatusInternalServerError, fmt.Sprintf("There was an error creating the JWT token"))
+		return ""
+	}
+	return tokenString
+}
+
 func CreateUser(c *gin.Context) {
 	// return's a JWT token
 	client := db.MongoCl.Client
@@ -75,69 +93,35 @@ func CreateUser(c *gin.Context) {
 	fmt.Println(id)
 	fmt.Println(res)
 
-	claims := &Claims{
-		Username:         user.Username,
-		RegisteredClaims: jwt.RegisteredClaims{},
-	}
+	tokenString := create_jwt_token(c, user.Username)
 
-	// Declare the token with the algorithm used for signing, and the claims
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	// Create the JWT string
-	tokenString, err := token.SignedString(jwtKey)
-	if err != nil {
-		// If there is an error in creating the JWT return an internal server error
-		c.String(http.StatusInternalServerError, fmt.Sprintf("There was an error creating the JWT token"))
-		return
-	}
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
-// Create the Signin handler
-// func Signin(c *gin.Context) {
-// 	// TODO: to signin query password from DB
-//
-// 	var creds Credentials
-// 	// Get the JSON body and decode into credentials
-// 	// TODO: remove creds struct
-// 	err := json.NewDecoder(c.Request.Body).Decode(&creds)
-// 	if err != nil {
-// 		// If the structure of the body is wrong, return an HTTP error
-// 		c.String(http.StatusPartialContent, fmt.Sprintf("no request body was sent..."))
-// 		return
-// 	}
-//
-// 	// Get the expected password from our in memory map
-// 	expectedPassword, ok := users[creds.Username]
-//
-// 	// If a password exists for the given user
-// 	// AND, if it is the same as the password we received, the we can move ahead
-// 	// if NOT, then we return an "Unauthorized" status
-// 	if !ok || expectedPassword != creds.Password {
-// 		c.String(http.StatusUnauthorized, fmt.Sprintf("Password invalid"))
-// 		return
-// 	}
-//
-// 	// Declare the expiration time of the token
-// 	// here, we have kept it as 5 minutes
-// 	expirationTime := time.Now().Add(5 * time.Minute)
-// 	// Create the JWT claims, which includes the username and expiry time
-// 	claims := &Claims{
-// 		Username:         creds.Username,
-// 		RegisteredClaims: jwt.RegisteredClaims{},
-// 	}
-//
-// 	// Declare the token with the algorithm used for signing, and the claims
-// 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-// 	// Create the JWT string
-// 	tokenString, err := token.SignedString(jwtKey)
-// 	if err != nil {
-// 		// If there is an error in creating the JWT return an internal server error
-// 		c.String(http.StatusInternalServerError, fmt.Sprintf("There was an error creating the JWT token"))
-// 		return
-// 	}
-//
-// 	c.JSON(http.StatusOK, gin.H{
-// 		"code":    http.StatusOK,
-// 		"message": string(tokenString), // cast it to string before showing
-// 	})
-// }
+type LoginRequestBody struct {
+	Username string
+	Password string
+}
+
+func Login(c *gin.Context) {
+	var requestBody LoginRequestBody
+
+	if err := c.BindJSON(&requestBody); err != nil {
+		fmt.Errorf("error")
+	}
+
+	client := db.MongoCl.Client
+	collection := client.Database("photos").Collection("users")
+	filter := bson.M{"username": requestBody.Username}
+
+	var credentials Credentials
+	collection.FindOne(context.Background(), filter).Decode(&credentials)
+	err := ComparePassword(credentials.Password, requestBody.Password)
+	if err != nil {
+		fmt.Println("wrong password")
+		return
+
+	}
+	tokenString := create_jwt_token(c, credentials.Username)
+	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+}

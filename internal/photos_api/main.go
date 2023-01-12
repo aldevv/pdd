@@ -6,6 +6,7 @@ import (
 	"github.com/plant_disease_detection/internal/db"
 	"github.com/plant_disease_detection/internal/middleware"
 	"github.com/plant_disease_detection/internal/photo_storage"
+	"github.com/plant_disease_detection/internal/routes"
 )
 
 var addr string
@@ -30,9 +31,13 @@ func Serve(storage_name interface{}, addrs ...string) {
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
 
 	router.POST("/create_user", auth.CreateUser)
+	router.POST("/login", auth.Login)
 
 	private := router.Group("/api", middleware.Protect)
+
+	// TODO: move savephoto to routes
 	private.POST("/upload", storage.SavePhoto)
+	private.POST("/get_photos", routes.GetPhotos)
 	// private.GET("/get_user", auth.GetUser)
 
 	setAddr(addrs...)
