@@ -1,0 +1,17 @@
+@host=http://localhost:8080
+
+POST {{host}}/create_user
+Content-Type: application/json
+
+{
+    "username":"John Doe7",
+    "password":"my weak password",
+    "email":"example3@example.com",
+    "phone":"+573105236382"
+}
+
+
+POST {{host}}/api/upload
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IiJ9.lQ5FqtMkE9AXIAwvHEmZ2rKLZGpVV9egzGNGhXzwlGA
+
+-F "uploads=@my_file.md"
