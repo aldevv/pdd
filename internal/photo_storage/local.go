@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"path/filepath"
 
 	"github.com/gin-gonic/gin"
@@ -21,10 +22,16 @@ func (s *LocalStorage) SavePhoto(c *gin.Context) {
 	claims, _ := c.Get("user")
 	user, _ := claims.(*auth.Claims)
 
+	dir := "./uploads"
+	if _, err := os.Stat(dir); os.IsNotExist(err) {
+		os.Mkdir(dir, 0755)
+	}
+
 	for _, file := range files {
 		log.Println(file.Filename)
 
-		filepath := "./uploads/" + uuid.New().String() + filepath.Ext(file.Filename)
+		filepath := dir + "/" + uuid.New().String() + filepath.Ext(file.Filename)
+
 		c.SaveUploadedFile(file, filepath)
 		SaveInDb(filepath, user.Username)
 	}
