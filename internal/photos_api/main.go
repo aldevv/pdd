@@ -9,23 +9,37 @@ import (
 	"github.com/plant_disease_detection/internal/routes"
 )
 
-var addr string
+type Server struct {
+	router       *gin.Engine
+	storage_name string
+	address      string
+}
 
-func setAddr(addrs ...string) {
-	if len(addrs) == 0 {
-		addr = "localhost:8080"
-	} else {
-		addr = addrs[0]
+type Option func(s *Server)
+
+func NewServer(opts ...Option) *Server {
+	s := &Server{}
+	for _, opt := range opts {
+		opt(s)
+	}
+	return s
+}
+
+func WithStorage(storage_name string) Option {
+	return func(s *Server) {
+		s.storage_name = storage_name
 	}
 }
 
-func Addr() string {
-	return addr
+func WithAddress(address string) Option {
+	return func(s *Server) {
+		s.address = address
+	}
 }
 
-func Serve(storage_name interface{}, addrs ...string) {
+func (s *Server) Serve() {
 	db.ConnectDB()
-	storage := photo_storage.GetStorage(storage_name)
+	storage := photo_storage.GetStorage(s.storage_name)
 
 	router := gin.Default()
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
@@ -40,6 +54,5 @@ func Serve(storage_name interface{}, addrs ...string) {
 	private.POST("/get_photos", routes.GetPhotos)
 	// private.GET("/get_user", auth.GetUser)
 
-	setAddr(addrs...)
-	router.Run(Addr())
+	router.Run(s.address)
 }

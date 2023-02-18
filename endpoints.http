@@ -4,7 +4,7 @@ POST {{host}}/create_user
 Content-Type: application/json
 
 {
-    "username":"John Doe7",
+    "username":"John Doe",
     "password":"my weak password",
     "email":"example3@example.com",
     "phone":"+573105236382"
@@ -12,6 +12,6 @@ Content-Type: application/json
 
 
 POST {{host}}/api/upload
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IiJ9.lQ5FqtMkE9AXIAwvHEmZ2rKLZGpVV9egzGNGhXzwlGA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIn0.rajmFWHCx0Fc62JhZ9fr6Nh3Kd1XAbesgNG2uOqQ-ZM
 
 -F "uploads=@my_file.md"
