@@ -28,11 +28,6 @@ func Protect(c *gin.Context) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		// for expire date
-		// if int64(t.Claims["exp"].(float64)) < time.Now().Unix() {
-		//         return nil, ErrorInvalidToken
-		// }
-		// must return the secret
 		return []byte(os.Getenv("JWT_SECRET")), nil
 	})
 

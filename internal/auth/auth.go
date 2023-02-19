@@ -84,15 +84,12 @@ func CreateUser(c *gin.Context) {
 	username := user.Username
 	password := user.Password
 	email := user.Email
-	res, err := collection.InsertOne(context.Background(), bson.M{"username": username, "password": HashPassword(password), "email": email})
+	_, err := collection.InsertOne(c, bson.M{"username": username, "password": HashPassword(password), "email": email})
 	if err != nil {
-		log.Fatal(err)
+		log.Printf(err.Error())
+		c.JSON(http.StatusNotAcceptable, gin.H{})
+		return
 	}
-	id := res.InsertedID
-	fmt.Println("==========")
-	fmt.Println(id)
-	fmt.Println(res)
-
 	tokenString := create_jwt_token(c, user.Username)
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})

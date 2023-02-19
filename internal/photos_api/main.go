@@ -4,9 +4,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/db"
+	"github.com/plant_disease_detection/internal/handlers"
 	"github.com/plant_disease_detection/internal/middleware"
 	"github.com/plant_disease_detection/internal/photo_storage"
-	"github.com/plant_disease_detection/internal/routes"
 )
 
 type Server struct {
@@ -49,9 +49,9 @@ func (s *Server) Serve() {
 
 	private := router.Group("/api", middleware.Protect)
 
-	// TODO: move savephoto to routes
+	// TODO: move savephoto to handlers
 	private.POST("/upload", storage.SavePhoto)
-	private.POST("/get_photos", routes.GetPhotos)
+	private.GET("/get_photos", handlers.GetPhotos)
 	// private.GET("/get_user", auth.GetUser)
 
 	router.Run(s.address)
