@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -79,12 +78,15 @@ func CreateUser(c *gin.Context) {
 	collection := client.Database("photos").Collection("users")
 	var user User
 	if err := c.BindJSON(&user); err != nil {
-		log.Fatal(err.Error())
+		log.Println(err.Error())
+		return
 	}
+
 	username := user.Username
 	password := user.Password
 	email := user.Email
-	_, err := collection.InsertOne(c, bson.M{"username": username, "password": HashPassword(password), "email": email})
+	record := bson.M{"username": username, "password": HashPassword(password), "email": email}
+	_, err := collection.InsertOne(c, record)
 	if err != nil {
 		log.Printf(err.Error())
 		c.JSON(http.StatusNotAcceptable, gin.H{})
@@ -95,24 +97,18 @@ func CreateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
-type LoginRequestBody struct {
-	Username string
-	Password string
-}
-
 func Login(c *gin.Context) {
-	var requestBody LoginRequestBody
-
+	var requestBody Credentials
 	if err := c.BindJSON(&requestBody); err != nil {
-		fmt.Errorf("error")
+		log.Println(err.Error())
+		return
 	}
 
 	client := db.MongoCl.Client
 	collection := client.Database("photos").Collection("users")
-	filter := bson.M{"username": requestBody.Username}
 
 	var credentials Credentials
-	collection.FindOne(context.Background(), filter).Decode(&credentials)
+	collection.FindOne(c, bson.M{"username": requestBody.Username}).Decode(&credentials)
 	err := ComparePassword(credentials.Password, requestBody.Password)
 	if err != nil {
 		fmt.Println("wrong password")

@@ -10,6 +10,14 @@ Content-Type: application/json
     "phone":"+573105236382"
 }
 
+POST {{host}}/login
+Content-Type: application/json
+
+{
+    "username":"John Doe2",
+    "password":"my weak password"
+}
+
 
 POST {{host}}/api/upload
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIn0.rajmFWHCx0Fc62JhZ9fr6Nh3Kd1XAbesgNG2uOqQ-ZM
@@ -18,4 +26,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikpva
 
 
 GET {{host}}/api/get_photos
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIn0.rajmFWHCx0Fc62JhZ9fr6Nh3Kd1XAbesgNG2uOqQ-ZM
+
+GET {{host}}/api/get_photo/63fd3d98789940f11cc6320e
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIn0.rajmFWHCx0Fc62JhZ9fr6Nh3Kd1XAbesgNG2uOqQ-ZM
