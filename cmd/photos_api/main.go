@@ -10,6 +10,7 @@ var args struct {
 }
 
 func main() {
+
 	arg.MustParse(&args)
 	s := api.NewServer(api.WithStorage(args.Storage), api.WithAddress(":8080"))
 	s.Serve()

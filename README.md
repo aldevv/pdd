@@ -14,7 +14,7 @@ MONGO_URL=mongodb://<user>:<pass>@localhost:27017/photos?authSource=admin
 ```
 ## Run the mongo database
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 ## Install the project's dependencies
 ```bash
