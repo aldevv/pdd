@@ -51,8 +51,10 @@ func (s *Server) Serve() {
 
 	// TODO: move savephoto to handlers
 	private.POST("/upload", storage.SavePhoto)
-	private.GET("/get_photos", handlers.GetPhotos)
-	private.GET("/get_photo/:id", handlers.GetPhoto)
+	private.GET("/photos", handlers.GetPhotos)
+	private.GET("/photos/:id", handlers.GetPhoto)
+	private.POST("/result/", handlers.PostResult)
+	private.GET("/result/", handlers.GetResult)
 	// private.GET("/get_user", auth.GetUser)
 
 	router.Run(s.address)

@@ -1,5 +1,5 @@
 local-up:
-	docker compose up -d
+	docker compose up -d;
 
 backend:
 	go build -o ~/.local/bin/photos_api cmd/photos_api/main.go

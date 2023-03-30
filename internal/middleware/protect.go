@@ -39,7 +39,7 @@ func Protect(c *gin.Context) {
 
 	if claims, ok := token.Claims.(*auth.Claims); ok && token.Valid {
 		c.Set("user", claims)
-		c.Set("authtoken", token)
+		c.Set("authtoken", token.Raw)
 	} else {
 		c.Abort()
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})

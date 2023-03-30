@@ -35,6 +35,7 @@ func (s *LocalStorage) SavePhoto(c *gin.Context) {
 
 		c.SaveUploadedFile(file, filepath)
 		SaveInDb(filepath, user.Username)
+
 		err := handlers.SendAI(c, filepath)
 		if err != nil {
 			log.Printf("failed to send the photoURL to sqs queue")
