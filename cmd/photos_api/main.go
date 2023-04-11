@@ -6,7 +6,7 @@ import (
 )
 
 var args struct {
-	Storage string `arg:"-s,--storage" help:"The storage where photos are going to be stored. default: 'google'"`
+	Storage string `arg:"-s,--storage" help:"The storage where photos are going to be stored." default:"google"`
 }
 
 func main() {

@@ -22,7 +22,7 @@ Content-Type: application/json
 POST {{host}}/api/upload
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lMiJ9.EM1z9O4iOP6PIA9TrrSW6uS6FssvnLwrn9WAt8nCMLc
 
--F "uploads=@my_file.md"
+-F "uploads=@./black_rot2.jpg"
 
 
 GET {{host}}/api/photos
@@ -30,3 +30,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikpva
 
 GET {{host}}/api/photo/63fd3d98789940f11cc6320e
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIn0.rajmFWHCx0Fc62JhZ9fr6Nh3Kd1XAbesgNG2uOqQ-ZM
+
+GET {{host}}/api/result
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lMiJ9.EM1z9O4iOP6PIA9TrrSW6uS6FssvnLwrn9WAt8nCMLc
+
+{
+    "photo_url": "03fb23fe-835d-45d1-83d1-21d253c4a488.md"
+}

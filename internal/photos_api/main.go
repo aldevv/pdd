@@ -53,8 +53,8 @@ func (s *Server) Serve() {
 	private.POST("/upload", storage.SavePhoto)
 	private.GET("/photos", handlers.GetPhotos)
 	private.GET("/photos/:id", handlers.GetPhoto)
-	private.POST("/result/", handlers.PostResult)
-	private.GET("/result/", handlers.GetResult)
+	private.POST("/result", handlers.PostResult)
+	private.GET("/result", handlers.GetResult)
 	// private.GET("/get_user", auth.GetUser)
 
 	router.Run(s.address)
