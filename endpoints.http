@@ -31,9 +31,5 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Ikpva
 GET {{host}}/api/photo/63fd3d98789940f11cc6320e
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lIn0.rajmFWHCx0Fc62JhZ9fr6Nh3Kd1XAbesgNG2uOqQ-ZM
 
-GET {{host}}/api/result
+GET {{host}}/api/result?photo_url=214313e7-100b-4298-9b2f-91c68da141f9.jpg
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lMiJ9.EM1z9O4iOP6PIA9TrrSW6uS6FssvnLwrn9WAt8nCMLc
-
-{
-    "photo_url": "214313e7-100b-4298-9b2f-91c68da141f9.jpg"
-}

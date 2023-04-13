@@ -88,9 +88,12 @@ type Query struct {
 }
 
 func GetResult(ctx *gin.Context) {
-	var res Query
-	if err := ctx.BindJSON(&res); err != nil {
-		fmt.Println("error decoding body: " + err.Error())
+	// var res Query
+	res := Query{
+		PhotoURL: ctx.Query("photo_url"),
+	}
+	if res.PhotoURL == "" {
+		fmt.Println("error: no photo_url in query param")
 		ctx.Status(400)
 		return
 	}
