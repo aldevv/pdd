@@ -11,6 +11,7 @@ import (
 	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/credentials"
 	"github.com/plant_disease_detection/internal/handlers"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type GCloudStorage struct{}
@@ -25,6 +26,7 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 	claims, _ := c.Get("user")
 	user, _ := claims.(*auth.Claims)
 
+	var fp string
 	for _, file := range files {
 
 		opened_file, err := file.Open()
@@ -36,6 +38,7 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 		}
 
 		filename := uuid.New().String() + filepath.Ext(file.Filename)
+		fp = filename
 		err = credentials.GClient.UploadFile(opened_file, filename)
 		SaveInDb(filename, user.Username)
 		if err != nil {
@@ -50,13 +53,11 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 			log.Print(err)
 		}
 	}
+	c.JSON(http.StatusOK, bson.M{"photo_url": fp})
 	return nil
 }
 
 // must receive the user ID
 func (s *GCloudStorage) SavePhoto(c *gin.Context) {
 	s._savePhoto(c)
-	c.JSON(http.StatusOK, gin.H{
-		"success": fmt.Sprintf("files uploaded!"),
-	})
 }

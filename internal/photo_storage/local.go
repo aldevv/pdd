@@ -1,7 +1,6 @@
 package photo_storage
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -11,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/handlers"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type LocalStorage struct{}
@@ -28,10 +28,12 @@ func (s *LocalStorage) SavePhoto(c *gin.Context) {
 		os.Mkdir(dir, 0755)
 	}
 
+	var fp string
 	for _, file := range files {
 		log.Println(file.Filename)
 
 		filepath := dir + "/" + uuid.New().String() + filepath.Ext(file.Filename)
+		fp = filepath
 
 		c.SaveUploadedFile(file, filepath)
 		SaveInDb(filepath, user.Username)
@@ -43,5 +45,5 @@ func (s *LocalStorage) SavePhoto(c *gin.Context) {
 		}
 	}
 
-	c.String(http.StatusOK, fmt.Sprintf("%d files uploaded!", len(files)))
+	c.JSON(http.StatusOK, bson.M{"photo_url": fp})
 }
