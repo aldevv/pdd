@@ -109,7 +109,7 @@ func GetResult(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, gin.H{"result": gin.H{"sickness": "😸", "accuracy": "😸"}})
+	ctx.JSON(200, gin.H{"result": gin.H{"sickness": nil, "accuracy": nil}})
 }
 
 func PostResult(ctx *gin.Context) {
