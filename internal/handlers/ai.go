@@ -88,7 +88,6 @@ type Query struct {
 }
 
 func GetResult(ctx *gin.Context) {
-	fmt.Println("inside GetResult")
 	var res Query
 	if err := ctx.BindJSON(&res); err != nil {
 		fmt.Println("error decoding body: " + err.Error())
@@ -99,15 +98,15 @@ func GetResult(ctx *gin.Context) {
 	collection := client.Database("photos").Collection("user_photos")
 
 	var curRec userPhoto
-	filter := bson.M{"photo_url": res}
+	filter := bson.M{"photo_url": res.PhotoURL}
 	collection.FindOne(ctx, filter).Decode(&curRec)
 
 	if curRec.Sickness != "" {
-		ctx.JSON(200, gin.H{"result": gin.H{"sickness": "something", "accuracy": 30}})
+		ctx.JSON(200, gin.H{"result": gin.H{"photo_url": curRec.Photo_url, "sickness": curRec.Sickness, "accuracy": curRec.Accuracy}})
+		return
 	}
 
-	ctx.JSON(200, gin.H{"result": gin.H{"sickness": "😸", "accuracy": nil}})
-
+	ctx.JSON(200, gin.H{"result": gin.H{"sickness": "😸", "accuracy": "😸"}})
 }
 
 func PostResult(ctx *gin.Context) {

@@ -42,6 +42,7 @@ func (s *Server) Serve() {
 	storage := photo_storage.GetStorage(s.storage_name)
 
 	router := gin.Default()
+	router.Use(corsMiddleware())
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
 
 	router.POST("/create_user", auth.CreateUser)
@@ -49,7 +50,6 @@ func (s *Server) Serve() {
 
 	private := router.Group("/api", middleware.Protect)
 
-	// TODO: move savephoto to handlers
 	private.POST("/upload", storage.SavePhoto)
 	private.GET("/photos", handlers.GetPhotos)
 	private.GET("/photos/:id", handlers.GetPhoto)
@@ -58,4 +58,18 @@ func (s *Server) Serve() {
 	// private.GET("/get_user", auth.GetUser)
 
 	router.Run(s.address)
+}
+
+func corsMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Origin, Authorization, Content-Type")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+		c.Next()
+	}
 }
