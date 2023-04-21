@@ -45,7 +45,7 @@ func (s *Server) Serve() {
 	router.Use(corsMiddleware())
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
 
-	router.POST("/create_user", auth.CreateUser)
+	router.POST("/user", auth.CreateUser)
 	router.POST("/login", auth.Login)
 
 	private := router.Group("/api", middleware.Protect)

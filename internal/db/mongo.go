@@ -42,6 +42,14 @@ func createUserIndex(db *mongo.Database, ctx context.Context) {
 	}
 
 	db.Collection("users").Indexes().CreateOne(ctx, model)
+
+	model = mongo.IndexModel{
+		Keys: bson.M{
+			"email": 1,
+		},
+		Options: options.Index().SetUnique(true),
+	}
+	db.Collection("users").Indexes().CreateOne(ctx, model)
 }
 
 func ConnectDB() {

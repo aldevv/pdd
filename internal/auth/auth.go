@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/plant_disease_detection/internal/db"
 
@@ -16,15 +17,15 @@ import (
 )
 
 type User struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
+	Username string `json:"username" binding:"required"`
+	Password string `json:"password" binding:"required"`
+	Email    string `json:"email" binding:"required"`
 }
 
 // Create a struct to read the username and password from the request body
 type Credentials struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Email    string `json:"email" binding:"required"`
+	Password string `json:"password" binding:"required"`
 }
 
 // Create the JWT key used to create the signature
@@ -77,8 +78,9 @@ func CreateUser(c *gin.Context) {
 	client := db.MongoCl.Client
 	collection := client.Database("photos").Collection("users")
 	var user User
-	if err := c.BindJSON(&user); err != nil {
+	if err := c.ShouldBind(&user); err != nil {
 		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -88,33 +90,35 @@ func CreateUser(c *gin.Context) {
 	record := bson.M{"username": username, "password": HashPassword(password), "email": email}
 	_, err := collection.InsertOne(c, record)
 	if err != nil {
-		log.Printf(err.Error())
-		c.JSON(http.StatusNotAcceptable, gin.H{})
+		errMsg := strings.Replace(strings.Replace(strings.TrimSuffix(strings.Split(err.Error(), "dup key:")[1], "]"), " { ", "", 1), "}", "", 1)
+		c.JSON(http.StatusConflict, gin.H{"error": errMsg + " already exists"})
 		return
 	}
-	tokenString := create_jwt_token(c, user.Username)
+	tokenString := create_jwt_token(c, user.Email)
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
 
 func Login(c *gin.Context) {
 	var requestBody Credentials
-	if err := c.BindJSON(&requestBody); err != nil {
+	if err := c.ShouldBind(&requestBody); err != nil {
 		log.Println(err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	client := db.MongoCl.Client
 	collection := client.Database("photos").Collection("users")
 
-	var credentials Credentials
-	collection.FindOne(c, bson.M{"username": requestBody.Username}).Decode(&credentials)
-	err := ComparePassword(credentials.Password, requestBody.Password)
+	var user User
+	collection.FindOne(c, bson.M{"email": requestBody.Email}).Decode(&user)
+	err := ComparePassword(user.Password, requestBody.Password)
 	if err != nil {
-		fmt.Println("wrong password")
+		fmt.Println("wrong email or password")
+		c.JSON(http.StatusBadRequest, gin.H{"error": "wrong email or password"})
 		return
 
 	}
-	tokenString := create_jwt_token(c, credentials.Username)
-	c.JSON(http.StatusOK, gin.H{"token": tokenString})
+	tokenString := create_jwt_token(c, user.Email)
+	c.JSON(http.StatusOK, gin.H{"token": tokenString, "user": user.Username})
 }

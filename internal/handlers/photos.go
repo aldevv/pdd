@@ -15,6 +15,7 @@ import (
 type userPhoto struct {
 	Id        string `json:"id" bson:"_id" bson:"_id"`
 	Username  string `json:"username" bson:"username"`
+	Email     string `json:"email" bson:"email"`
 	Photo_url string `json:"photo_url" bson:"photo_url"`
 	Sickness  string `json:"sickness,omitempty" bson:"sickness,omitempty"`
 	Accuracy  string `json:"accuracy,omitempty" bson:"accuracy,omitempty"`

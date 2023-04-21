@@ -1,10 +1,10 @@
 @host=http://localhost:8080
 
-POST {{host}}/create_user
+POST {{host}}/user
 Content-Type: application/json
 
 {
-    "username":"John Doe2",
+    "username":"John Doe3",
     "password":"my weak password",
     "email":"example3@example.com",
     "phone":"+573105236382"
@@ -14,7 +14,7 @@ POST {{host}}/login
 Content-Type: application/json
 
 {
-    "username":"John Doe2",
+    "email":"example2@example.com",
     "password":"my weak password"
 }
 
