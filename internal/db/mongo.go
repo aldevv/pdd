@@ -17,6 +17,11 @@ type MongoClient struct {
 	Client *mongo.Client
 }
 
+func GetCollection(col string) *mongo.Collection {
+	client := MongoCl.Client
+	return client.Database("photos").Collection(col)
+}
+
 func (c *MongoClient) InsertUserPhoto(uid string, filename string) {
 	col := c.Client.Database("photos").Collection("user_photos")
 

@@ -50,12 +50,15 @@ func (s *Server) Serve() {
 
 	private := router.Group("/api", middleware.Protect)
 
-	private.POST("/upload", storage.SavePhoto)
+	// private.POST("/upload", storage.SavePhoto)
+	private.POST("/photos", storage.SavePhoto)
+	private.DELETE("/photos/:id", storage.DeletePhoto)
 	private.GET("/photos", handlers.GetPhotos)
 	private.GET("/photos/:id", handlers.GetPhoto)
-	private.POST("/result", handlers.PostResult)
-	private.GET("/result", handlers.GetResult)
-	// private.GET("/get_user", auth.GetUser)
+	private.POST("/results", handlers.PostResult)
+	private.GET("/results", handlers.GetResults)
+	private.GET("/results/:id", handlers.GetResult)
+	private.GET("/users/:username", handlers.GetUser)
 
 	router.Run(s.address)
 }

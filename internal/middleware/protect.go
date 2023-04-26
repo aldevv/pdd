@@ -16,8 +16,8 @@ func Protect(c *gin.Context) {
 	auth_header := c.GetHeader("Authorization")
 	if len(auth_header) == 0 {
 		log.Println("no token given")
+		c.Status(http.StatusUnauthorized)
 		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "no token provided"})
 		return
 	}
 
@@ -32,8 +32,8 @@ func Protect(c *gin.Context) {
 	})
 
 	if err != nil {
+		c.Status(http.StatusUnauthorized)
 		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -41,7 +41,8 @@ func Protect(c *gin.Context) {
 		c.Set("user", claims)
 		c.Set("authtoken", token.Raw)
 	} else {
+		c.Status(http.StatusUnauthorized)
 		c.Abort()
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "invalid token"})
+		return
 	}
 }

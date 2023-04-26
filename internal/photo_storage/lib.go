@@ -12,6 +12,7 @@ import (
 
 type Storage interface {
 	SavePhoto(c *gin.Context)
+	DeletePhoto(c *gin.Context)
 }
 
 func GetStorage(storage_name interface{}) Storage {

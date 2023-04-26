@@ -11,9 +11,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/gin-gonic/gin"
+	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/db"
 	"github.com/rs/zerolog/log"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func SendAI(ctx *gin.Context, photoURL string) error {
@@ -87,10 +89,33 @@ type Query struct {
 	PhotoURL string `json:"photo_url"`
 }
 
+func GetResults(ctx *gin.Context) {
+	// var res Query
+	client := db.MongoCl.Client
+	collection := client.Database("photos").Collection("user_photos")
+
+	claims, _ := ctx.Get("user")
+	user, _ := claims.(*auth.Claims)
+
+	cur, err := collection.Find(ctx, bson.M{"username": user.Username}, options.Find().SetProjection(bson.M{"_id": 0}))
+	if err != nil {
+		ctx.Status(500)
+		return
+	}
+	var results []userResult
+	err = cur.All(ctx, &results)
+	if err != nil {
+		ctx.Status(500)
+		return
+	}
+
+	ctx.JSON(200, gin.H{"data": results})
+}
+
 func GetResult(ctx *gin.Context) {
 	// var res Query
 	res := Query{
-		PhotoURL: ctx.Query("photo_url"),
+		PhotoURL: ctx.Param("id"),
 	}
 	if res.PhotoURL == "" {
 		fmt.Println("error: no photo_url in query param")
@@ -100,16 +125,16 @@ func GetResult(ctx *gin.Context) {
 	client := db.MongoCl.Client
 	collection := client.Database("photos").Collection("user_photos")
 
-	var curRec userPhoto
+	var curRec userResult
 	filter := bson.M{"photo_url": res.PhotoURL}
-	collection.FindOne(ctx, filter).Decode(&curRec)
+	collection.FindOne(ctx, filter, options.FindOne().SetProjection(bson.M{"_id": 0})).Decode(&curRec)
 
 	if curRec.Sickness != "" {
-		ctx.JSON(200, gin.H{"result": gin.H{"photo_url": curRec.Photo_url, "sickness": curRec.Sickness, "accuracy": curRec.Accuracy}})
+		ctx.JSON(200, gin.H{"data": gin.H{"photo_url": curRec.Photo_url, "sickness": curRec.Sickness, "accuracy": curRec.Accuracy}})
 		return
 	}
 
-	ctx.JSON(200, gin.H{"result": gin.H{"sickness": nil, "accuracy": nil}})
+	ctx.JSON(200, gin.H{"data": gin.H{"sickness": "", "accuracy": ""}})
 }
 
 func PostResult(ctx *gin.Context) {

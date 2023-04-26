@@ -18,7 +18,7 @@ import (
 
 type User struct {
 	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Password string `json:"password,omitempty" binding:"required"`
 	Email    string `json:"email" binding:"required"`
 }
 
@@ -94,7 +94,7 @@ func CreateUser(c *gin.Context) {
 		c.JSON(http.StatusConflict, gin.H{"error": errMsg + " already exists"})
 		return
 	}
-	tokenString := create_jwt_token(c, user.Email)
+	tokenString := create_jwt_token(c, user.Username)
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
@@ -119,6 +119,6 @@ func Login(c *gin.Context) {
 		return
 
 	}
-	tokenString := create_jwt_token(c, user.Email)
-	c.JSON(http.StatusOK, gin.H{"token": tokenString, "user": user.Username})
+	tokenString := create_jwt_token(c, user.Username)
+	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }

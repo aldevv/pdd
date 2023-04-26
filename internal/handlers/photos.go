@@ -7,15 +7,22 @@ import (
 	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/db"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	// "github.com/plant_disease_detection/internal/db"
 	// "go.mongodb.org/mongo-driver/bson"
 )
 
-type userPhoto struct {
-	Id        string `json:"id" bson:"_id" bson:"_id"`
+type userResult struct {
+	Id        string `json:"id,omitempty" bson:"_id" bson:"_id"`
 	Username  string `json:"username" bson:"username"`
-	Email     string `json:"email" bson:"email"`
+	Photo_url string `json:"photo_url" bson:"photo_url"`
+	Sickness  string `json:"sickness" bson:"sickness"`
+	Accuracy  string `json:"accuracy" bson:"accuracy"`
+}
+
+type userPhoto struct {
+	Id        string `json:"id,omitempty" bson:"_id" bson:"_id"`
+	Username  string `json:"username" bson:"username"`
 	Photo_url string `json:"photo_url" bson:"photo_url"`
 	Sickness  string `json:"sickness,omitempty" bson:"sickness,omitempty"`
 	Accuracy  string `json:"accuracy,omitempty" bson:"accuracy,omitempty"`
@@ -38,7 +45,7 @@ func GetPhotos(c *gin.Context) {
 		return
 	}
 
-	cursor, err := collection.Find(c, bson.M{"username": user.Username})
+	cursor, err := collection.Find(c, bson.M{"username": user.Username}, options.Find().SetProjection(bson.M{"_id": 0}))
 
 	if err != nil {
 		log.Printf("there was an error looking for the records with the user's username: " + user.Username)
@@ -71,13 +78,9 @@ func GetPhoto(c *gin.Context) {
 		return
 	}
 
-	id, err := primitive.ObjectIDFromHex(c.Param("id"))
-	if err != nil {
-		log.Println("could not convert id given to objectID")
-		return
-	}
+	id := c.Param("id")
 	var record userPhoto
-	err = collection.FindOne(c, bson.M{"_id": id, "username": user.Username}).Decode(&record)
+	err := collection.FindOne(c, bson.M{"photo_url": id, "username": user.Username}, options.FindOne().SetProjection(bson.M{"_id": 0})).Decode(&record)
 
 	if err != nil {
 		log.Printf("there was an error decoding the record for user with id %s", id)

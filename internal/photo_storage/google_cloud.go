@@ -10,6 +10,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/plant_disease_detection/internal/auth"
 	"github.com/plant_disease_detection/internal/credentials"
+	"github.com/plant_disease_detection/internal/db"
 	"github.com/plant_disease_detection/internal/handlers"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -60,4 +61,34 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 // must receive the user ID
 func (s *GCloudStorage) SavePhoto(c *gin.Context) {
 	s._savePhoto(c)
+}
+
+func (s *GCloudStorage) DeletePhoto(c *gin.Context) {
+	client := db.MongoCl.Client
+	collection := client.Database("photos").Collection("user_photos")
+
+	user_claims, exists := c.Get("user")
+
+	if !exists {
+		log.Printf("user does not exist in the db, which means he has no pictures stored")
+		return
+	}
+
+	_, ok := user_claims.(*auth.Claims)
+	if !ok {
+		log.Printf("the user in the context does not have the correct Claims shape")
+		return
+	}
+
+	id := c.Param("id")
+	_, err := collection.DeleteOne(c, bson.M{"photo_url": id})
+
+	if err != nil {
+		log.Printf("there was an error deleting the record for user with id %s", id)
+		return
+	}
+
+	credentials.GClient.RemoveFile(id)
+
+	c.Status(200)
 }

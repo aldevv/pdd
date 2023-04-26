@@ -46,6 +46,17 @@ func (c *UploaderClient) UploadFile(file multipart.File, object string) error {
 	return nil
 }
 
+func (c *UploaderClient) RemoveFile(object string) error {
+	ctx := context.Background()
+
+	err := c.cl.Bucket(c.bucketName).Object(c.uploadPath + object).Delete(ctx)
+	if err != nil {
+		return fmt.Errorf("Failed to delete object: %v", err)
+	}
+
+	return nil
+}
+
 func init() {
 	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
 		os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", "./google_cloud_credentials.json")
