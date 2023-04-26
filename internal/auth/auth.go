@@ -35,6 +35,7 @@ var jwtKey = []byte(os.Getenv("JWT_SECRET"))
 // We add jwt.RegisteredClaims as an embedded type, to provide fields like expiry time
 type Claims struct {
 	Username string `json:"username"`
+	Email    string `json:"email"`
 	jwt.RegisteredClaims
 }
 
@@ -55,9 +56,10 @@ func ComparePassword(hashPassword string, password string) error {
 	return err
 }
 
-func create_jwt_token(c *gin.Context, username string) string {
+func create_jwt_token(c *gin.Context, username string, email string) string {
 	claims := &Claims{
 		Username:         username,
+		Email:            email,
 		RegisteredClaims: jwt.RegisteredClaims{},
 	}
 
@@ -94,7 +96,7 @@ func CreateUser(c *gin.Context) {
 		c.JSON(http.StatusConflict, gin.H{"error": errMsg + " already exists"})
 		return
 	}
-	tokenString := create_jwt_token(c, user.Username)
+	tokenString := create_jwt_token(c, user.Username, user.Email)
 
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }
@@ -119,6 +121,6 @@ func Login(c *gin.Context) {
 		return
 
 	}
-	tokenString := create_jwt_token(c, user.Username)
+	tokenString := create_jwt_token(c, user.Username, user.Email)
 	c.JSON(http.StatusOK, gin.H{"token": tokenString})
 }

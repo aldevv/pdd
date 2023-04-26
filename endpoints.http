@@ -3,7 +3,7 @@
 GET {{host}}/api/users/John%20Doe3
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkpvaG4gRG9lMiJ9.EM1z9O4iOP6PIA9TrrSW6uS6FssvnLwrn9WAt8nCMLc
 
-POST {{host}}/user
+POST {{host}}/users
 Content-Type: application/json
 
 {
