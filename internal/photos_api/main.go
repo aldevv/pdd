@@ -45,8 +45,9 @@ func (s *Server) Serve() {
 	router.Use(corsMiddleware())
 	router.MaxMultipartMemory = 100 << 20 // 8 MiB
 
-	router.POST("/user", auth.CreateUser)
+	router.POST("/users", auth.CreateUser)
 	router.POST("/login", auth.Login)
+	router.POST("/password_recovery", auth.PasswordRecovery)
 
 	private := router.Group("/api", middleware.Protect)
 
@@ -59,6 +60,7 @@ func (s *Server) Serve() {
 	private.GET("/results", handlers.GetResults)
 	private.GET("/results/:id", handlers.GetResult)
 	private.GET("/users/:username", handlers.GetUser)
+	private.POST("/password_reset", auth.PasswordReset)
 
 	router.Run(s.address)
 }

@@ -25,7 +25,7 @@ func SendAI(ctx *gin.Context, photoURL string) error {
 		if service == sqs.ServiceID {
 			return aws.Endpoint{
 				PartitionID: "aws",
-				URL:         "http://localhost:9324",
+				URL:         os.Getenv("PDD_AI_URL"),
 			}, nil
 		}
 		return aws.Endpoint{}, fmt.Errorf("unknown endpoint requested")
