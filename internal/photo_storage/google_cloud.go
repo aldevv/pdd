@@ -18,6 +18,7 @@ import (
 type GCloudStorage struct{}
 
 func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
+	fmt.Println("trace _savePhoto google storage")
 	if credentials.GClient == nil {
 		return fmt.Errorf("no credentials client defined")
 	}
@@ -40,18 +41,25 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 
 		filename := uuid.New().String() + filepath.Ext(file.Filename)
 		fp = filename
+		fmt.Println("trace _savePhoto uploading file to google storage")
 		err = credentials.GClient.UploadFile(opened_file, filename)
-		SaveInDb(filename, user.Username)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error": err.Error(),
 			})
 			return err
 		}
+
+		fmt.Println("trace _savePhoto saving in db")
+		SaveInDb(filename, user.Username)
 		err = handlers.SendAI(c, filename)
 		if err != nil {
 			log.Printf("failed to send the photoURL to sqs queue")
 			log.Print(err)
+			c.JSON(http.StatusInternalServerError, gin.H{
+				"error": err.Error(),
+			})
+			return err
 		}
 	}
 	c.JSON(http.StatusOK, bson.M{"photo_url": fp})
