@@ -22,13 +22,22 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 	if credentials.GClient == nil {
 		return fmt.Errorf("no credentials client defined")
 	}
-	form, _ := c.MultipartForm()
+	form, err := c.MultipartForm()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		fmt.Println("error in multipart form")
+		return err
+	}
+	fmt.Println("before claims")
 	files := form.File["uploads"]
 
 	claims, _ := c.Get("user")
 	user, _ := claims.(*auth.Claims)
 
 	var fp string
+	fmt.Println("before for")
 	for _, file := range files {
 
 		opened_file, err := file.Open()
@@ -68,7 +77,12 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 
 // must receive the user ID
 func (s *GCloudStorage) SavePhoto(c *gin.Context) {
-	s._savePhoto(c)
+	err := s._savePhoto(c)
+	if err != nil {
+		fmt.Println("error:")
+		fmt.Println(err)
+		c.Status(http.StatusInternalServerError)
+	}
 }
 
 func (s *GCloudStorage) DeletePhoto(c *gin.Context) {

@@ -11,10 +11,10 @@ MONGO_USER=
 MONGO_PASS=
 JWT_SECRET=
 SQS_QUEUE_URL=
+SQS_ENDPOINT_URL=
 SENDGRID_API_KEY=
 PDD_EMAIL=
 MONGO_URL=mongodb://<user>:<pass>@localhost:27017/photos?authSource=admin
-PDD_AI_URL=
 ```
 ## Run the mongo database
 ```bash
