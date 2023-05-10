@@ -18,7 +18,6 @@ import (
 type GCloudStorage struct{}
 
 func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
-	fmt.Println("trace _savePhoto google storage")
 	if credentials.GClient == nil {
 		return fmt.Errorf("no credentials client defined")
 	}
@@ -30,14 +29,12 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 		fmt.Println("error in multipart form")
 		return err
 	}
-	fmt.Println("before claims")
 	files := form.File["uploads"]
 
 	claims, _ := c.Get("user")
 	user, _ := claims.(*auth.Claims)
 
 	var fp string
-	fmt.Println("before for")
 	for _, file := range files {
 
 		opened_file, err := file.Open()
@@ -50,7 +47,6 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 
 		filename := uuid.New().String() + filepath.Ext(file.Filename)
 		fp = filename
-		fmt.Println("trace _savePhoto uploading file to google storage")
 		err = credentials.GClient.UploadFile(opened_file, filename)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
@@ -59,7 +55,6 @@ func (s *GCloudStorage) _savePhoto(c *gin.Context) error {
 			return err
 		}
 
-		fmt.Println("trace _savePhoto saving in db")
 		SaveInDb(filename, user.Username)
 		err = handlers.SendAI(c, filename)
 		if err != nil {

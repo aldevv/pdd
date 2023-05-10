@@ -6,9 +6,6 @@
 
 ## Create a .env file with these variables: 
 ```bash
-VOLUMES=
-MONGO_USER=
-MONGO_PASS=
 JWT_SECRET=
 SQS_QUEUE_URL=
 SQS_ENDPOINT_URL=
