@@ -43,10 +43,14 @@ func PasswordRecovery(c *gin.Context) {
 		return
 	}
 
-	resetLink := "http://example.com/reset-password?token=" + tokenString
-	fmt.Println("username: ", user.Username)
-	fmt.Println("email: ", user.Email)
-	fmt.Println("token: ", tokenString)
+	var resetLink string
+	if os.Getenv("RECOVERY_PAGE") != "" {
+		resetLink = os.Getenv("RECOVERY_PAGE") + "?token=" + tokenString
+
+	} else {
+		resetLink = "http://example.com/reset-password?token=" + tokenString
+	}
+
 	err = SendResetEmail(user.Email, resetLink)
 	fmt.Println("error: ", err)
 	if err != nil {
